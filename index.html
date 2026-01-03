@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1565C0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Nala Survey</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --primary-light: #42A5F5;
+            --success: #2E7D32;
+            --success-light: #4CAF50;
+            --warning: #F57C00;
+            --danger: #D32F2F;
+            --bg: #F5F7FA;
+            --card: #FFFFFF;
+            --text: #1A1A2E;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(21, 101, 192, 0.3);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        
+        /* Container */
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Card */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .form-group label .required {
+            color: var(--danger);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(21, 101, 192, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* GPS Button */
+        .gps-section {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .gps-section input {
+            flex: 1;
+        }
+        
+        .btn-gps {
+            padding: 14px 16px;
+            background: linear-gradient(135deg, var(--success-light), var(--success));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .btn-gps:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-gps.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .gps-status {
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .gps-status.show {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* AC Units Section */
+        .ac-section {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+        
+        .ac-item {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .ac-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .ac-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .btn-remove-ac {
+            width: 28px;
+            height: 28px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .ac-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .ac-grid .form-group {
+            margin-bottom: 0;
+        }
+        
+        .ac-grid input,
+        .ac-grid select {
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+        
+        .btn-add-ac {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-add-ac:hover {
+            background: rgba(21, 101, 192, 0.05);
+        }
+        
+        .empty-ac {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .empty-ac i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+        
+        /* Photo Upload */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg);
+            border: 2px solid var(--border);
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-item .btn-remove-photo {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-add {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary);
+            transition: all 0.2s;
+        }
+        
+        .photo-add:hover {
+            background: rgba(21, 101, 192, 0.05);
+            border-color: var(--primary);
+        }
+        
+        .photo-add i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .photo-add span {
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .photo-add input {
+            display: none;
+        }
+        
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 25px rgba(21, 101, 192, 0.35);
+            transition: all 0.3s;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 460px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+        
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .btn-submit i {
+            font-size: 18px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            max-width: 460px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background: linear-gradient(135deg, var(--success-light), var(--success));
+        }
+        
+        .toast.error {
+            background: linear-gradient(135deg, #EF5350, var(--danger));
+        }
+        
+        .toast.info {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+        
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            transform: scale(0.8);
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--success-light), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+        }
+        
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .modal p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .modal .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .modal .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .modal .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .loading-subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        
+        /* Surveyor Info */
+        .surveyor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 380px) {
+            .photo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ac-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div>
+                <h1>Nala Survey</h1>
+                <p>Form Entry Data Survey</p>
+            </div>
+        </div>
+        <div class="surveyor-badge" id="surveyorBadge" style="display: none;">
+            <i class="fas fa-user"></i>
+            <span id="surveyorName">-</span>
+        </div>
+    </header>
+    
+    <!-- Main Form -->
+    <div class="container">
+        <!-- Data Client -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-building"></i>
+                Data Client
+            </div>
+            
+            <div class="form-group">
+                <label>Nama Proyek <span class="required">*</span></label>
+                <input type="text" id="projectName" placeholder="Contoh: Hotel Empress Makassar" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nama Client <span class="required">*</span></label>
+                <input type="text" id="clientName" placeholder="Nama perusahaan atau perorangan">
+            </div>
+            
+            <div class="form-group">
+                <label>No. HP Client <span class="required">*</span></label>
+                <input type="tel" id="clientPhone" placeholder="08xxxxxxxxxx">
+            </div>
+        </div>
+        
+        <!-- Lokasi -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Lokasi Survey
+            </div>
+            
+            <div class="form-group">
+                <label>Alamat Lengkap <span class="required">*</span></label>
+                <div class="gps-section">
+                    <input type="text" id="address" placeholder="Jl. Boulevard No. 123, Makassar">
+                    <button type="button" class="btn-gps" id="btnGps" onclick="getLocation()">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                </div>
+                <div class="gps-status" id="gpsStatus">
+                    <i class="fas fa-check-circle"></i>
+                    <span>GPS berhasil diambil</span>
+                </div>
+            </div>
+            
+            <input type="hidden" id="latitude">
+            <input type="hidden" id="longitude">
+        </div>
+        
+        <!-- Unit AC (Optional) -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-snowflake"></i>
+                Unit AC <span style="font-weight: 400; font-size: 12px; color: var(--text-muted);">(Opsional)</span>
+            </div>
+            
+            <div class="ac-section">
+                <div id="acList">
+                    <div class="empty-ac">
+                        <i class="fas fa-snowflake"></i>
+                        <p>Belum ada data AC</p>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-add-ac" onclick="addAcUnit()">
+                    <i class="fas fa-plus"></i>
+                    Tambah Unit AC
+                </button>
+            </div>
+        </div>
+        
+        <!-- Foto -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-camera"></i>
+                Foto Survey <span style="font-weight: 400; font-size: 12px; color: var(--text-muted);">(Max 5)</span>
+            </div>
+            
+            <div class="photo-grid" id="photoGrid">
+                <label class="photo-item photo-add">
+                    <i class="fas fa-plus"></i>
+                    <span>Tambah</span>
+                    <input type="file" accept="image/*" capture="environment" onchange="addPhoto(event)">
+                </label>
+            </div>
+        </div>
+        
+        <!-- Catatan -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-sticky-note"></i>
+                Catatan Surveyor
+            </div>
+            
+            <div class="form-group">
+                <textarea id="notes" placeholder="Catatan tambahan: kondisi lokasi, kendala, kebutuhan khusus, dll..."></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Submit Button -->
+    <button type="button" class="btn-submit" id="btnSubmit" onclick="submitSurvey()">
+        <i class="fas fa-paper-plane"></i>
+        Kirim Data Survey
+    </button>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Pesan</span>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="modal-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Berhasil!</h2>
+            <p>Data survey telah dikirim ke sistem NalaBI. Tim admin akan menindaklanjuti.</p>
+            <button class="btn btn-primary" onclick="resetForm()">
+                <i class="fas fa-plus"></i> Survey Baru
+            </button>
+            <button class="btn btn-secondary" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Mengirim Data...</div>
+        <div class="loading-subtext" id="loadingSubtext">Mengupload foto...</div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Firebase Config (sama dengan NalaBI)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBI5T3ZVyHXSRFikTjSlnW9P04cO1UDAwg",
+            authDomain: "databasebesar.firebaseapp.com",
+            projectId: "databasebesar",
+            storageBucket: "databasebesar.firebasestorage.app",
+            messagingSenderId: "253231829334",
+            appId: "1:253231829334:web:8de5d690cb4fb61bc546f7"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        
+        // Current user
+        let currentUser = null;
+        
+        // Anonymous Sign In
+        async function signInAnonymously() {
+            try {
+                const result = await auth.signInAnonymously();
+                currentUser = result.user;
+                console.log('✅ Anonymous auth success:', currentUser.uid);
+                return true;
+            } catch (error) {
+                console.error('❌ Anonymous auth failed:', error);
+                return false;
+            }
+        }
+        
+        // Check auth state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                console.log('✅ User authenticated:', user.uid);
+            } else {
+                // Auto sign in anonymously
+                signInAnonymously();
+            }
+        });
+        
+        // State
+        let acUnits = [];
+        let photos = [];
+        let locationData = { lat: null, lng: null };
+        
+        // Default Materials (sama dengan NalaBI)
+        const DEFAULT_MATERIALS = [
+            { name: 'Pipa 1/4" - 3/8"', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Pipa 1/4" - 1/2"', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Pipa 3/8" - 5/8"', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Kabel 2x1.5', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Kabel 2x2.5', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Kabel 3x2.5', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Kabel 4x2.5', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Bracket', unit: 'pcs', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Ducktip', unit: 'pcs', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Isolasi Listrik', unit: 'roll', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Sadel', unit: 'pcs', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Duckting', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Armaflex', unit: 'm', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 }
+        ];
+        
+        const DEFAULT_SERVICES = [
+            { name: 'Jasa Pasang', unit: 'unit', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Jasa Tarik Pipa', unit: 'unit', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 },
+            { name: 'Jasa Bobok', unit: 'unit', quotationPrice: 0, quotationQty: 0, realPrice: 0, realQty: 0 }
+        ];
+        
+        // AC Types
+        const AC_TYPES = [
+            '1/2 PK', '3/4 PK', '1 PK', '1.5 PK', '2 PK', '2.5 PK', '3 PK', '5 PK',
+            'Cassette 2 PK', 'Cassette 3 PK', 'Cassette 4 PK', 'Cassette 5 PK',
+            'Standing Floor 3 PK', 'Standing Floor 5 PK',
+            'Lainnya'
+        ];
+        
+        // Get GPS Location
+        function getLocation() {
+            const btn = document.getElementById('btnGps');
+            const status = document.getElementById('gpsStatus');
+            
+            btn.classList.add('loading');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationData.lat = position.coords.latitude;
+                        locationData.lng = position.coords.longitude;
+                        
+                        document.getElementById('latitude').value = locationData.lat;
+                        document.getElementById('longitude').value = locationData.lng;
+                        
+                        // Reverse geocoding
+                        reverseGeocode(locationData.lat, locationData.lng);
+                        
+                        btn.classList.remove('loading');
+                        btn.innerHTML = '<i class="fas fa-check"></i>';
+                        btn.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+                        
+                        status.classList.add('show');
+                        
+                        showToast('Lokasi GPS berhasil diambil', 'success');
+                    },
+                    (error) => {
+                        btn.classList.remove('loading');
+                        btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
+                        showToast('Gagal mengambil lokasi GPS', 'error');
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                btn.classList.remove('loading');
+                btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
+                showToast('Browser tidak mendukung GPS', 'error');
+            }
+        }
+        
+        // Reverse Geocoding
+        async function reverseGeocode(lat, lng) {
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+                );
+                const data = await response.json();
+                
+                if (data.display_name) {
+                    document.getElementById('address').value = data.display_name;
+                }
+            } catch (error) {
+                console.log('Reverse geocoding failed:', error);
+            }
+        }
+        
+        // Add AC Unit
+        function addAcUnit() {
+            const id = Date.now();
+            acUnits.push({
+                id: id,
+                acType: '',
+                qty: 1,
+                condition: 'baru'
+            });
+            
+            renderAcUnits();
+        }
+        
+        // Remove AC Unit
+        function removeAcUnit(id) {
+            acUnits = acUnits.filter(ac => ac.id !== id);
+            renderAcUnits();
+        }
+        
+        // Render AC Units
+        function renderAcUnits() {
+            const list = document.getElementById('acList');
+            
+            if (acUnits.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-ac">
+                        <i class="fas fa-snowflake"></i>
+                        <p>Belum ada data AC</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = acUnits.map((ac, index) => `
+                <div class="ac-item">
+                    <div class="ac-item-header">
+                        <span class="ac-item-title">Unit AC #${index + 1}</span>
+                        <button type="button" class="btn-remove-ac" onclick="removeAcUnit(${ac.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="ac-grid">
+                        <div class="form-group">
+                            <label>Tipe AC</label>
+                            <select onchange="updateAcUnit(${ac.id}, 'acType', this.value)">
+                                <option value="">Pilih tipe</option>
+                                ${AC_TYPES.map(type => `
+                                    <option value="${type}" ${ac.acType === type ? 'selected' : ''}>${type}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Jumlah</label>
+                            <input type="number" value="${ac.qty}" min="1" 
+                                onchange="updateAcUnit(${ac.id}, 'qty', this.value)">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Kondisi</label>
+                            <select onchange="updateAcUnit(${ac.id}, 'condition', this.value)">
+                                <option value="baru" ${ac.condition === 'baru' ? 'selected' : ''}>Instalasi Baru</option>
+                                <option value="existing" ${ac.condition === 'existing' ? 'selected' : ''}>AC Existing (Service)</option>
+                                <option value="relokasi" ${ac.condition === 'relokasi' ? 'selected' : ''}>Relokasi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Update AC Unit
+        function updateAcUnit(id, field, value) {
+            const ac = acUnits.find(a => a.id === id);
+            if (ac) {
+                ac[field] = field === 'qty' ? parseInt(value) || 1 : value;
+            }
+        }
+        
+        // Add Photo
+        function addPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (photos.length >= 5) {
+                showToast('Maksimal 5 foto', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Ukuran foto maksimal 5MB', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photos.push({
+                    id: Date.now(),
+                    file: file,
+                    preview: e.target.result
+                });
+                renderPhotos();
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset input
+            event.target.value = '';
+        }
+        
+        // Remove Photo
+        function removePhoto(id) {
+            photos = photos.filter(p => p.id !== id);
+            renderPhotos();
+        }
+        
+        // Render Photos
+        function renderPhotos() {
+            const grid = document.getElementById('photoGrid');
+            
+            grid.innerHTML = photos.map(photo => `
+                <div class="photo-item">
+                    <img src="${photo.preview}" alt="Photo">
+                    <button type="button" class="btn-remove-photo" onclick="removePhoto(${photo.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            // Add button if less than 5 photos
+            if (photos.length < 5) {
+                grid.innerHTML += `
+                    <label class="photo-item photo-add">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="addPhoto(event)">
+                    </label>
+                `;
+            }
+        }
+        
+        // Submit Survey
+        async function submitSurvey() {
+            // Validate required fields
+            const projectName = document.getElementById('projectName').value.trim();
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            
+            if (!projectName || !clientName || !clientPhone || !address) {
+                showToast('Lengkapi semua field wajib', 'error');
+                return;
+            }
+            
+            // Show loading
+            showLoading(true, 'Menyiapkan data...');
+            
+            try {
+                // Make sure user is authenticated
+                if (!currentUser) {
+                    showLoading(true, 'Mengautentikasi...');
+                    const authSuccess = await signInAnonymously();
+                    if (!authSuccess) {
+                        throw new Error('Gagal autentikasi. Coba lagi.');
+                    }
+                }
+                
+                // Upload photos first
+                const uploadedPhotos = [];
+                const projectId = 'survey_' + Date.now();
+                
+                for (let i = 0; i < photos.length; i++) {
+                    showLoading(true, `Mengupload foto ${i + 1}/${photos.length}...`);
+                    
+                    const photo = photos[i];
+                    
+                    // Sanitize filename - remove special characters
+                    const extension = photo.file.name.split('.').pop().toLowerCase();
+                    const sanitizedName = `photo_${Date.now()}_${i}.${extension}`;
+                    
+                    const storageRef = storage.ref(`nala_projects/${projectId}/photos/${sanitizedName}`);
+                    
+                    // Get correct content type
+                    let contentType = photo.file.type || 'image/jpeg';
+                    if (extension === 'png') contentType = 'image/png';
+                    else if (extension === 'jpg' || extension === 'jpeg') contentType = 'image/jpeg';
+                    else if (extension === 'gif') contentType = 'image/gif';
+                    else if (extension === 'webp') contentType = 'image/webp';
+                    
+                    // Upload with explicit metadata
+                    const metadata = {
+                        contentType: contentType
+                    };
+                    
+                    await storageRef.put(photo.file, metadata);
+                    const url = await storageRef.getDownloadURL();
+                    
+                    uploadedPhotos.push({
+                        url: url,
+                        filename: sanitizedName,
+                        uploadedAt: new Date().toISOString()
+                    });
+                }
+                
+                showLoading(true, 'Menyimpan data...');
+                
+                // Convert acUnits to NalaBI format
+                const acUnitsFormatted = acUnits
+                    .filter(ac => ac.acType)
+                    .map(ac => ({
+                        acType: `${ac.acType} (${ac.condition})`,
+                        quotationQty: ac.qty,
+                        quotationPrice: 0,
+                        realQty: 0,
+                        realPrice: 0
+                    }));
+                
+                // Prepare project data (NalaBI format)
+                const projectData = {
+                    projectName: projectName,
+                    client: clientName,
+                    phone: clientPhone,
+                    status: 'survey', // Status Survey
+                    description: document.getElementById('notes').value.trim() || '',
+                    location: {
+                        lat: locationData.lat || -5.1477,
+                        lng: locationData.lng || 119.4327,
+                        address: address
+                    },
+                    materials: DEFAULT_MATERIALS,
+                    services: DEFAULT_SERVICES,
+                    acUnits: acUnitsFormatted,
+                    photos: uploadedPhotos,
+                    documents: {
+                        penawaran: [],
+                        bast: [],
+                        invoice: [],
+                        gallery: []
+                    },
+                    source: 'survey_app',
+                    surveyDate: new Date().toISOString(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdBy: currentUser ? currentUser.uid : 'survey_team'
+                };
+                
+                // Save to Firestore
+                await db.collection('nala_projects').add(projectData);
+                
+                showLoading(false);
+                
+                // Show success modal
+                document.getElementById('successModal').classList.add('show');
+                
+            } catch (error) {
+                console.error('Error submitting survey:', error);
+                showLoading(false);
+                showToast('Gagal mengirim data: ' + error.message, 'error');
+            }
+        }
+        
+        // Reset Form
+        function resetForm() {
+            document.getElementById('projectName').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            
+            locationData = { lat: null, lng: null };
+            acUnits = [];
+            photos = [];
+            
+            renderAcUnits();
+            renderPhotos();
+            
+            document.getElementById('gpsStatus').classList.remove('show');
+            document.getElementById('btnGps').innerHTML = '<i class="fas fa-crosshairs"></i>';
+            document.getElementById('btnGps').style.background = '';
+            
+            closeModal();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Close Modal
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('show');
+        }
+        
+        // Show Loading
+        function showLoading(show, text = 'Mengirim data...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const subtext = document.getElementById('loadingSubtext');
+            
+            if (show) {
+                overlay.classList.add('show');
+                subtext.textContent = text;
+            } else {
+                overlay.classList.remove('show');
+            }
+        }
+        
+        // Show Toast
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            const icon = toast.querySelector('i');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            } else {
+                icon.className = 'fas fa-info-circle';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderAcUnits();
+            renderPhotos();
+            
+            // Auto sign in anonymously
+            if (!currentUser) {
+                await signInAnonymously();
+            }
+            
+            console.log('🔍 Nala Survey App initialized');
+        });
+    </script>
+</body>
+</html>
