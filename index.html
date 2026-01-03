@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1565C0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Nala Survey</title>
     
@@ -738,9 +738,28 @@
     </div>
     
     <!-- Submit Button -->
-    <button type="button" class="btn-submit" id="btnSubmit" onclick="submitSurvey()">
+    <button type="button" class="btn-submit" id="btnSubmit" onclick="submitSurvey(false)">
         <i class="fas fa-paper-plane"></i>
         Kirim Data Survey
+    </button>
+    
+    <!-- Test Button (tanpa foto) -->
+    <button type="button" id="btnTest" onclick="submitSurvey(true)" style="
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        padding: 12px 16px;
+        background: #FF9800;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 99;
+        box-shadow: 0 4px 15px rgba(255,152,0,0.3);
+    ">
+        <i class="fas fa-flask"></i> Test Tanpa Foto
     </button>
     
     <!-- Toast -->
@@ -1054,7 +1073,7 @@
         }
         
         // Submit Survey
-        async function submitSurvey() {
+        async function submitSurvey(skipPhotos = false) {
             // Validate required fields
             const projectName = document.getElementById('projectName').value.trim();
             const clientName = document.getElementById('clientName').value.trim();
@@ -1079,41 +1098,46 @@
                     }
                 }
                 
-                // Upload photos first
+                // Upload photos (if not skipped)
                 const uploadedPhotos = [];
                 const projectId = 'survey_' + Date.now();
                 
-                for (let i = 0; i < photos.length; i++) {
-                    showLoading(true, `Mengupload foto ${i + 1}/${photos.length}...`);
-                    
-                    const photo = photos[i];
-                    
-                    // Sanitize filename - remove special characters
-                    const extension = photo.file.name.split('.').pop().toLowerCase();
-                    const sanitizedName = `photo_${Date.now()}_${i}.${extension}`;
-                    
-                    const storageRef = storage.ref(`nala_projects/${projectId}/photos/${sanitizedName}`);
-                    
-                    // Get correct content type
-                    let contentType = photo.file.type || 'image/jpeg';
-                    if (extension === 'png') contentType = 'image/png';
-                    else if (extension === 'jpg' || extension === 'jpeg') contentType = 'image/jpeg';
-                    else if (extension === 'gif') contentType = 'image/gif';
-                    else if (extension === 'webp') contentType = 'image/webp';
-                    
-                    // Upload with explicit metadata
-                    const metadata = {
-                        contentType: contentType
-                    };
-                    
-                    await storageRef.put(photo.file, metadata);
-                    const url = await storageRef.getDownloadURL();
-                    
-                    uploadedPhotos.push({
-                        url: url,
-                        filename: sanitizedName,
-                        uploadedAt: new Date().toISOString()
-                    });
+                if (!skipPhotos && photos.length > 0) {
+                    for (let i = 0; i < photos.length; i++) {
+                        showLoading(true, `Mengupload foto ${i + 1}/${photos.length}...`);
+                        
+                        const photo = photos[i];
+                        
+                        // Sanitize filename
+                        const extension = photo.file.name.split('.').pop().toLowerCase();
+                        const sanitizedName = `photo_${Date.now()}_${i}.${extension}`;
+                        
+                        const storageRef = storage.ref(`nala_projects/${projectId}/photos/${sanitizedName}`);
+                        
+                        // Get content type
+                        let contentType = 'image/jpeg';
+                        if (extension === 'png') contentType = 'image/png';
+                        else if (extension === 'gif') contentType = 'image/gif';
+                        else if (extension === 'webp') contentType = 'image/webp';
+                        
+                        // Convert to base64 and upload using putString
+                        const base64Data = photo.preview.split(',')[1];
+                        
+                        const metadata = {
+                            contentType: contentType
+                        };
+                        
+                        await storageRef.putString(base64Data, 'base64', metadata);
+                        const url = await storageRef.getDownloadURL();
+                        
+                        uploadedPhotos.push({
+                            url: url,
+                            filename: sanitizedName,
+                            uploadedAt: new Date().toISOString()
+                        });
+                    }
+                } else if (skipPhotos) {
+                    console.log('⏭️ Skipping photo upload (test mode)');
                 }
                 
                 showLoading(true, 'Menyimpan data...');
@@ -1257,3 +1281,4 @@
     </script>
 </body>
 </html>
+
