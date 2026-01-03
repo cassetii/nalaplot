@@ -1108,27 +1108,24 @@
                         
                         const photo = photos[i];
                         
-                        // Sanitize filename
-                        const extension = photo.file.name.split('.').pop().toLowerCase();
-                        const sanitizedName = `photo_${Date.now()}_${i}.${extension}`;
+                        // Simple filename
+                        const sanitizedName = `photo_${projectId}_${i}.jpg`;
                         
                         const storageRef = storage.ref(`nala_projects/${projectId}/photos/${sanitizedName}`);
                         
-                        // Get content type
-                        let contentType = 'image/jpeg';
-                        if (extension === 'png') contentType = 'image/png';
-                        else if (extension === 'gif') contentType = 'image/gif';
-                        else if (extension === 'webp') contentType = 'image/webp';
-                        
-                        // Convert to base64 and upload using putString
+                        // Convert base64 to Blob
                         const base64Data = photo.preview.split(',')[1];
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let j = 0; j < byteCharacters.length; j++) {
+                            byteNumbers[j] = byteCharacters.charCodeAt(j);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], { type: 'image/jpeg' });
                         
-                        const metadata = {
-                            contentType: contentType
-                        };
-                        
-                        await storageRef.putString(base64Data, 'base64', metadata);
-                        const url = await storageRef.getDownloadURL();
+                        // Upload blob
+                        const snapshot = await storageRef.put(blob);
+                        const url = await snapshot.ref.getDownloadURL();
                         
                         uploadedPhotos.push({
                             url: url,
@@ -1281,4 +1278,3 @@
     </script>
 </body>
 </html>
-
